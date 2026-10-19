@@ -6,6 +6,7 @@ import { heightAt } from './terrain.js';
 const ROCK_COUNT = 260;
 const VARIANTS = 4;
 const SCATTER_RADIUS = 160;
+const CLEAR_RADIUS = 6;
 
 function createRockGeometry(seed) {
   let geometry = new THREE.IcosahedronGeometry(1, 2);
@@ -40,7 +41,8 @@ export function createRocks() {
 
     for (let i = 0; i < perVariant; i++) {
       const angle = random() * Math.PI * 2;
-      const radius = Math.sqrt(random()) * SCATTER_RADIUS;
+      // Keep the rover's starting spot clear.
+      const radius = CLEAR_RADIUS + Math.sqrt(random()) * (SCATTER_RADIUS - CLEAR_RADIUS);
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
       // Mostly pebbles, a few large boulders.

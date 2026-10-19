@@ -40,9 +40,9 @@ function createMoon(radius, stretch, direction) {
   const geometry = new THREE.IcosahedronGeometry(radius, 3);
   geometry.scale(stretch, 1, 0.9);
   const material = new THREE.MeshStandardMaterial({
-    color: 0x8a7a6c,
+    color: 0xc9b8a6,
     roughness: 1,
-    emissive: 0x2a1c14,
+    emissive: 0x6a5546,
     fog: false,
   });
   const moon = new THREE.Mesh(geometry, material);
@@ -73,8 +73,8 @@ export function createSky() {
   group.add(dome);
 
   // Phobos (larger, lumpy) and Deimos (small), exaggerated for a cinematic shot.
-  const phobos = createMoon(7, 1.35, new THREE.Vector3(0.38, 0.3, -0.87));
-  const deimos = createMoon(3, 1.1, new THREE.Vector3(0.12, 0.42, -0.9));
+  const phobos = createMoon(7, 1.35, new THREE.Vector3(0.35, 0.18, -0.92));
+  const deimos = createMoon(3, 1.1, new THREE.Vector3(0.12, 0.26, -0.96));
   group.add(phobos, deimos);
 
   return {
