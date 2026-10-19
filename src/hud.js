@@ -8,7 +8,7 @@ export function createHud() {
     <div class="hud-row"><span>Speed</span><b data-speed>0.0 m/s</b></div>
     <div class="hud-row"><span>Heading</span><b data-heading>0°</b></div>
     <div class="hud-row"><span>Odometer</span><b data-odometer>0.0 m</b></div>
-    <div class="hud-hint">W/S drive · A/D steer · drag to orbit</div>
+    <div class="hud-hint">W/S drive · A/D steer · T mission control · drag to orbit</div>
   `;
   document.body.appendChild(panel);
 

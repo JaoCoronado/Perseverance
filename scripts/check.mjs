@@ -7,6 +7,7 @@ import { chromium } from 'playwright-core';
 const SCREENSHOT = 'screenshots/check.png';
 const TURN_SCREENSHOT = 'screenshots/turn.png';
 const DRIVE_DISTANCE = 14; // meters, enough to leave visible tracks
+const TELEMETRY_KEYS = ['percy.odometer', 'percy.elevation', 'percy.tilt', 'percy.lightTime'];
 
 const server = await createServer({ logLevel: 'error', server: { port: 5199, open: false } });
 await server.listen();
@@ -34,6 +35,27 @@ try {
 
   await page.goto(url);
   await page.waitForFunction(() => window.__marsReady && window.__roverReady, null, { timeout: 90_000 });
+
+  // Mission control: all four telemetry points must load real numbers.
+  await page.waitForFunction(() => window.__missionControl?.ready, null, { timeout: 60_000 });
+  const mission = await page.evaluate(() => window.__missionControl);
+  console.log('Mission control:');
+  for (const key of TELEMETRY_KEYS) {
+    const value = mission.values[key];
+    const ok = Number.isFinite(value);
+    console.log(`  ${ok ? 'OK  ' : 'FAIL'} ${key} = ${ok ? value : 'missing'}`);
+    if (!ok) errors.push(`[check] telemetry ${key} did not load`);
+  }
+
+  // T hides the panel and shows it again.
+  const panelHidden = () => page.evaluate(() => document.querySelector('.mission-control').hidden);
+  await page.keyboard.press('KeyT');
+  const hiddenAfterFirst = await panelHidden();
+  await page.keyboard.press('KeyT');
+  const hiddenAfterSecond = await panelHidden();
+  const toggleOk = hiddenAfterFirst === true && hiddenAfterSecond === false;
+  console.log(`  ${toggleOk ? 'OK  ' : 'FAIL'} T toggles the panel (hidden: ${hiddenAfterFirst} -> ${hiddenAfterSecond})`);
+  if (!toggleOk) errors.push('[check] T key does not toggle mission control');
 
   // Drive forward with a gentle left turn, then let the camera settle.
   // Real key presses go through the game's input; __advance steps the simulation

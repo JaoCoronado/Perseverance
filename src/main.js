@@ -12,6 +12,8 @@ import { createFollowCamera } from './followCamera.js';
 import { createWheels } from './wheels.js';
 import { createWheelDust } from './wheelDust.js';
 import { createHud } from './hud.js';
+import { createPercyTelemetry } from './telemetry/percyTelemetry.js';
+import { createMissionControl } from './missionControl.js';
 
 const START_YAW = Math.PI; // facing the sun and the moons
 
@@ -23,6 +25,7 @@ const lights = createLights();
 const tracks = createTracks(heightAt);
 const wheelDust = createWheelDust();
 const hud = createHud();
+createMissionControl(createPercyTelemetry());
 scene.add(sky.object, createTerrain(), createRocks(), lights.object, dust.object, tracks.object, wheelDust.object);
 
 // Light metallic parts with the dusty sky instead of leaving them black.
