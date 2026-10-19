@@ -8,6 +8,18 @@
     <style>
       html, body { margin: 0; height: 100%; overflow: hidden; background: #c98a55; }
       canvas { display: block; }
+      .hud {
+        position: fixed; left: 16px; bottom: 16px; min-width: 200px;
+        padding: 12px 14px; border-radius: 8px;
+        background: rgba(40, 18, 8, 0.6);
+        border: 1px solid rgba(255, 210, 170, 0.18);
+        color: #f6e2cf; font: 12px/1.6 ui-monospace, Consolas, monospace;
+        pointer-events: none; user-select: none;
+      }
+      .hud-title { letter-spacing: 0.12em; font-weight: 700; margin-bottom: 6px; color: #ffc896; }
+      .hud-row { display: flex; justify-content: space-between; gap: 16px; }
+      .hud-row b { font-variant-numeric: tabular-nums; font-weight: 600; }
+      .hud-hint { margin-top: 8px; opacity: 0.65; font-size: 11px; }
     </style>
   </head>
   <body>

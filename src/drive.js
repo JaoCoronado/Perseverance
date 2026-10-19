@@ -21,7 +21,7 @@ export function createDriver(rover, heightAt, { yaw = 0 } = {}) {
   window.addEventListener('keyup', (e) => keys.delete(e.code));
   window.addEventListener('blur', () => keys.clear());
 
-  const state = { yaw, speed: 0, distance: 0 };
+  const state = { yaw, yawRate: 0, speed: 0, distance: 0 };
   const forward = new THREE.Vector3();
   const right = new THREE.Vector3();
   const tangentForward = new THREE.Vector3();
@@ -70,7 +70,8 @@ export function createDriver(rover, heightAt, { yaw = 0 } = {}) {
       const targetSpeed = throttle * MAX_SPEED;
       const step = ACCELERATION * dt;
       state.speed += THREE.MathUtils.clamp(targetSpeed - state.speed, -step, step);
-      state.yaw += steer * TURN_RATE * dt;
+      state.yawRate = steer * TURN_RATE;
+      state.yaw += state.yawRate * dt;
 
       const travel = state.speed * dt;
       rover.position.x += Math.sin(state.yaw) * travel;

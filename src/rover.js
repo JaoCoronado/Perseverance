@@ -57,5 +57,5 @@ export async function loadRover() {
   const rover = new THREE.Group();
   rover.name = 'Perseverance';
   rover.add(model);
-  return { object: rover, cameraParts };
+  return { object: rover, model, cameraParts };
 }

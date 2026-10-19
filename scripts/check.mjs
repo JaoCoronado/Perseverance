@@ -5,6 +5,7 @@ import { createServer } from 'vite';
 import { chromium } from 'playwright-core';
 
 const SCREENSHOT = 'screenshots/check.png';
+const TURN_SCREENSHOT = 'screenshots/turn.png';
 const DRIVE_DISTANCE = 14; // meters, enough to leave visible tracks
 
 const server = await createServer({ logLevel: 'error', server: { port: 5199, open: false } });
@@ -35,17 +36,31 @@ try {
   await page.waitForFunction(() => window.__marsReady && window.__roverReady, null, { timeout: 90_000 });
 
   // Drive forward with a gentle left turn, then let the camera settle.
+  // Real key presses go through the game's input; __advance steps the simulation
+  // in fixed time so the result does not depend on headless frame rate.
+  const advance = (seconds) => page.evaluate((s) => window.__advance(s), seconds);
   await page.keyboard.down('KeyW');
   await page.keyboard.down('KeyA');
-  await page.waitForTimeout(800);
+  await advance(0.8);
   await page.keyboard.up('KeyA');
-  await page.waitForFunction((d) => window.__roverState.distance > d, DRIVE_DISTANCE, { timeout: 90_000 });
+  await advance(5);
   await page.keyboard.up('KeyW');
-  await page.waitForTimeout(2500);
+  await advance(1.5);
+  const distance = await page.evaluate(() => window.__roverState.distance);
+  if (distance < DRIVE_DISTANCE) errors.push(`[check] rover only drove ${distance.toFixed(1)} m`);
+  await page.waitForTimeout(1000);
 
   await mkdir('screenshots', { recursive: true });
   await page.screenshot({ path: SCREENSHOT });
   console.log(`Screenshot: ${SCREENSHOT}`);
+
+  // Turn in place so the corner wheels angle and both sides spin in opposite directions.
+  await page.keyboard.down('KeyA');
+  await advance(1.2);
+  await page.waitForTimeout(1000);
+  await page.screenshot({ path: TURN_SCREENSHOT });
+  await page.keyboard.up('KeyA');
+  console.log(`Screenshot: ${TURN_SCREENSHOT}`);
 } catch (error) {
   errors.push(`[check] ${error.message}`);
 } finally {
